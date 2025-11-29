@@ -38,20 +38,21 @@ export default function Game() {
   };
 
   useEffect(() => {
-    if (gameState === "running" && currentNumber === 1) {
-      startTimer();
-    }
     if (gameState === "finished") {
       stopTimer();
     }
     return () => stopTimer();
-  }, [gameState, currentNumber]);
+  }, [gameState]);
 
   const handleClick = (num: number) => {
     if (gameState !== "running") return;
     if (num !== currentNumber) return;
+    if (num === 1) {
+      startTimer();
+    }
     setTapped((prev) => new Set(prev).add(num));
     if (currentNumber === 25) {
+      stopTimer();
       setGameState("finished");
     } else {
       setCurrentNumber((c) => c + 1);
