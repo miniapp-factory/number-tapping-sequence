@@ -10,6 +10,7 @@ export default function Game() {
   >("notStarted");
   const [currentNumber, setCurrentNumber] = useState(1);
   const [tapped, setTapped] = useState<Set<number>>(new Set());
+  const [error, setError] = useState(false);
   const [grid, setGrid] = useState<number[]>(shuffleArray());
   const [elapsed, setElapsed] = useState(0);
   const intervalRef = useRef<number | null>(null);
@@ -44,9 +45,19 @@ export default function Game() {
     return () => stopTimer();
   }, [gameState]);
 
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const handleClick = (num: number) => {
     if (gameState !== "running") return;
-    if (num !== currentNumber) return;
+    if (num !== currentNumber) {
+      setError(true);
+      return;
+    }
     if (num === 1) {
       startTimer();
     }
@@ -98,7 +109,7 @@ export default function Game() {
               key={num}
               variant="outline"
               size="lg"
-              className="h-20 w-20 text-2xl"
+              className={`h-20 w-20 text-2xl ${error ? "border-4 border-red-500" : ""}`}
               disabled={tapped.has(num)}
               onClick={() => handleClick(num)}
             >
